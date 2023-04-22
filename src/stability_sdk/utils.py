@@ -59,8 +59,7 @@ def truncate_fit(prefix: str, prompt: str, ext: str, ts: int, idx: int, max: int
     If they exceed `max`, this function will just always construct a filename with no prompt component.
     """
     post = f"_{ts}_{idx}"
-    prompt_budget = max
-    prompt_budget -= len(prefix)
+    prompt_budget = max - len(prefix)
     prompt_budget -= len(post)
     prompt_budget -= len(ext) + 1
     return f"{prefix}{prompt[:prompt_budget]}{post}{ext}"

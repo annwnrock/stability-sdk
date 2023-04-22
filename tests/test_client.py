@@ -14,11 +14,9 @@ from typing import Generator
 
 def test_client_import():
     from stability_sdk import client
-    assert True
 
 def test_StabilityInference_init():
     class_instance = client.StabilityInference(key='thisIsNotARealKey')
-    assert True
 
 def test_StabilityInference_init_nokey_error():
     try:
@@ -29,7 +27,6 @@ def test_StabilityInference_init_nokey_error():
 
 def test_StabilityInference_init_nokey_insecure_host():
     class_instance = client.StabilityInference(host='foo.bar.baz')
-    assert True
 
 def test_image_to_prompt():
     im = Image.new('RGB',(1,1))

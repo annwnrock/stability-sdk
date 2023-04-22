@@ -69,9 +69,9 @@ if not STABILITY_KEY:
         " API key."
     )
     sys.exit(1)
-    
-    
-    
+
+
+
 # CLI parsing
 parser = ArgumentParser()
 parser.add_argument(
@@ -188,8 +188,5 @@ artifacts = process_artifacts_from_answers(
     filter_types=args.artifact_types,
 )
 if args.show:
-    for artifact in open_images(artifacts, verbose=True):
-        pass
-else:
-    for artifact in artifacts:
+    for _ in open_images(artifacts, verbose=True):
         pass
