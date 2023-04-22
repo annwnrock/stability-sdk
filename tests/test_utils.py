@@ -20,7 +20,6 @@ def test_artifact_type_to_str_invalid():
 @pytest.mark.parametrize("sampler_name", SAMPLERS.keys())
 def test_get_sampler_from_str_valid(sampler_name):
     get_sampler_from_str(s=sampler_name)
-    assert True
 
 def test_get_sampler_from_str_invalid():
     with pytest.raises(ValueError, match="unknown sampler"):

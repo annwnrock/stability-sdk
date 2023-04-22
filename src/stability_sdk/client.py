@@ -99,17 +99,16 @@ def process_artifacts_from_answers(
                 ext = ".pb"
                 contents = artifact.SerializeToString()
             out_p = truncate_fit(prefix, prompt, ext, int(artifact_start), idx, MAX_FILENAME_SZ)
-            is_allowed_type = filter_types is None or artifact_type_to_str(artifact.type) in filter_types
             if write:
+                is_allowed_type = filter_types is None or artifact_type_to_str(artifact.type) in filter_types
                 if is_allowed_type:
                     with open(out_p, "wb") as f:
                         f.write(bytes(contents))
                         if verbose:
                             logger.info(f"wrote {artifact_type_to_str(artifact.type)} to {out_p}")
-                else:
-                    if verbose:
-                        logger.info(
-                            f"skipping {artifact_type_to_str(artifact.type)} due to artifact type filter")
+                elif verbose:
+                    logger.info(
+                        f"skipping {artifact_type_to_str(artifact.type)} due to artifact type filter")
 
             yield (out_p, artifact)
             idx += 1
@@ -152,8 +151,8 @@ class StabilityInference:
         if max_message_size is None:
             max_message_size = 10 * 1024 * 1024 # 10MB
         options = [
-            ("grpc.max_send_message_length", int(max_message_size)),
-            ("grpc.max_receive_message_length",int(max_message_size)),
+            ("grpc.max_send_message_length", max_message_size),
+            ("grpc.max_receive_message_length", max_message_size),
         ]
 
         if host.endswith("443"):
@@ -300,10 +299,7 @@ class StabilityInference:
                 ],
             )
 
-        transform=None
-        if sampler:
-            transform=generation.TransformType(diffusion=sampler)
-
+        transform = generation.TransformType(diffusion=sampler) if sampler else None
         image_parameters=generation.ImageParameters(
             transform=transform,
             height=height,
@@ -454,7 +450,7 @@ if __name__ == "__main__":
         help="engine to use for upscale",
         default="esrgan-v1-x2plus",
     )
-    
+
 
     parser_generate = subparsers.add_parser('generate')
     parser_generate.add_argument(
@@ -530,12 +526,10 @@ if __name__ == "__main__":
     )
     parser_generate.add_argument("prompt", nargs="*")
 
-    
+
     # handle backwards compatibility, default command to generate
     input_args = sys.argv[1:]
-    command = None
-    if len(input_args)>0:
-        command = input_args[0]
+    command = input_args[0] if len(input_args)>0 else None
     if command not in subparsers.choices.keys() and command != '-h' and command != '--help':
         logger.warning(f"command {command} not recognized, defaulting to 'generate'")
         logger.warning(
@@ -545,9 +539,9 @@ if __name__ == "__main__":
         "[Deprecation Warning] Where <command> is one of: upscale, generate"
         )
         input_args = ['generate'] + input_args
-      
+
     args = parser.parse_args(input_args)
-    
+
     if args.command == "upscale":
         args.init_image = Image.open(args.init_image)
 
@@ -604,10 +598,7 @@ if __name__ == "__main__":
             args.prefix, args.prompt, answers, write=not args.no_store, verbose=True,
             filter_types=args.artifact_types,
         )
-    
+
     if args.show:
-        for artifact in open_images(artifacts, verbose=True):
-            pass
-    else:
-        for artifact in artifacts:
+        for _ in open_images(artifacts, verbose=True):
             pass
